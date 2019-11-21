@@ -1,8 +1,14 @@
+const path = require('path');
 const HtmlWebPackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   entry: './src/index.jsx',
+  output: {
+    path: path.resolve(__dirname, 'dist'),
+    publicPath: '/',
+  },
   resolve: {
+    modules: ['node_modules', 'src'],
     extensions: ['.js', '.jsx'],
   },
   module: {
@@ -22,12 +28,25 @@ module.exports = {
           },
         ],
       },
+      {
+        test: /\.css$/,
+        exclude: /node_modules/,
+        use: ['style-loader', 'css-loader'],
+      },
+      {
+        test: /\.css$/,
+        include: /node_modules/,
+        use: ['style-loader', 'css-loader'],
+      },
     ],
+  },
+  devServer: {
+    historyApiFallback: true,
   },
   plugins: [
     new HtmlWebPackPlugin({
-      template: './src/index.html',
-      filename: './index.html',
+      template: 'src/index.html',
+      filename: 'index.html',
     }),
   ],
 };
