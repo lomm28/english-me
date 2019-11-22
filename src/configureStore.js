@@ -17,5 +17,13 @@ export default function configureStore(initialState = {}, history) {
     composeEnhancers(...enhancers),
   );
 
+  store.injectedReducers = {};
+
+  if (module.hot) {
+    module.hot.accept('./reducers', () => {
+      store.replaceReducer(createReducer(store.injectedReducers));
+    });
+  }
+
   return store;
 }

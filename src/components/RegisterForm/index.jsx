@@ -7,7 +7,7 @@ import { push } from 'connected-react-router';
 const { Group, Label, Control } = Form;
 const { Feedback } = Control;
 
-const LoginForm = ({ push }) => {
+const RegisterForm = ({ push }) => {
   const [validated, setValidated] = useState(false);
 
   const handleSubmit = event => {
@@ -19,11 +19,16 @@ const LoginForm = ({ push }) => {
 
     setValidated(true);
   };
-
-  const redirectToRegister = () => push('/register');
+  const redirectToLogin = () => push('/login');
 
   const renderFormFields = () => (
     <>
+      <Group controlId="formUsername">
+        <Label>Username</Label>
+        <Control placeholder="Enter username" required />
+        <Feedback>Looks good!</Feedback>
+      </Group>
+
       <Group controlId="formBasicEmail">
         <Label>Email address</Label>
         <Control type="email" placeholder="Enter email" required />
@@ -35,6 +40,12 @@ const LoginForm = ({ push }) => {
         <Control type="password" placeholder="Password" required />
         <Feedback>Looks good!</Feedback>
       </Group>
+
+      <Group controlId="confirmPassword">
+        <Label>Confirm Password</Label>
+        <Control type="password" placeholder="Confirm Password" required />
+        <Feedback>Looks good!</Feedback>
+      </Group>
     </>
   );
 
@@ -44,8 +55,8 @@ const LoginForm = ({ push }) => {
         Submit
       </Button>
       <div className="text-center" style={{ marginTop: 10 }}>
-        <Button variant="link" size="sm" onClick={() => redirectToRegister()}>
-          Sign Up
+        <Button variant="link" size="sm" onClick={() => redirectToLogin()}>
+          Sign In
         </Button>
       </div>
     </>
@@ -62,7 +73,7 @@ const LoginForm = ({ push }) => {
               padding: 20,
             }}
           >
-            <h4 className="text-center">Login</h4>
+            <h4 className="text-center">Register</h4>
             <Form noValidate validated={validated} onSubmit={handleSubmit}>
               {renderFormFields()}
               {renderBtns()}
@@ -74,8 +85,8 @@ const LoginForm = ({ push }) => {
   );
 };
 
-LoginForm.propTypes = {
+RegisterForm.propTypes = {
   push: func.isRequired,
 };
 
-export default connect(null, { push })(LoginForm);
+export default connect(null, { push })(RegisterForm);
