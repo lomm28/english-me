@@ -1,7 +1,7 @@
-const ApplicationError = require('./application-error');
-const ClientFailure = require('./client-failure');
-const UnknownResourceError = require('./client-failure/unknown-resource-error');
-const InvalidRequestBodyFormat = require('./client-failure/invalid-request-body-format');
+const ApplicationError = require('./applicationError');
+const ClientFailure = require('./clientFailure');
+const UnknownResourceError = require('./clientFailure/unknownResourceError');
+const InvalidRequestBodyFormat = require('./clientFailure/invalidReqBodyFormat');
 
 module.exports = {
   ApplicationError,
