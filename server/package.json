@@ -4,8 +4,8 @@
   "description": "Server for english-me application",
   "main": "app.js",
   "scripts": {
-    "start": "node app",
-    "dev": "nodemon --quiet | pino-pretty -c -l -t"
+    "start:server": "node app",
+    "dev:server": "nodemon --quiet | pino-pretty -c -l -t"
   },
   "author": "Dmytro Danko",
   "license": "MIT",
@@ -21,7 +21,13 @@
     "@koa/cors": "^3.0.0",
     "koa": "^2.11.0",
     "koa-bodyparser": "^4.2.1",
+    "koa-passport": "^4.1.3",
+    "koa-redis": "^4.0.0",
     "koa-router": "^7.4.0",
+    "koa-session": "^5.12.3",
+    "mysql2": "^2.0.1",
+    "passport": "^0.4.0",
+    "passport-local": "^1.0.0",
     "pino": "^5.14.0",
     "sequelize": "^5.21.2",
     "swagger-jsdoc": "^3.4.0"

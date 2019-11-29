@@ -1,12 +1,17 @@
 const Koa = require('koa');
 const logging = require('@kasa/koa-logging');
 const requestId = require('@kasa/koa-request-id');
+const session = require('koa-session');
+const RedisStore = require('koa-redis');
 const errorHandler = require('./middlewares/errorHandler');
 const bodyParser = require('./middlewares/bodyParser');
 const cors = require('./middlewares/cors');
+const passport = require('./middlewares/passport');
 const corsConfig = require('./config/cors');
+const sessionSecret = require('./config/session');
 const logger = require('./logger');
-const router = require('./routes');
+const miscRouter = require('./routes/misc');
+const authRouter = require('./routes/auth');
 
 class App extends Koa {
   constructor(...params) {
@@ -14,6 +19,7 @@ class App extends Koa {
     this.proxy = true;
     this.silent = this.evn !== 'development';
     this.servers = [];
+    this.keys = [sessionSecret.server.secret];
 
     this._configureMiddlewares();
     this._configureRoutes();
@@ -22,18 +28,21 @@ class App extends Koa {
   _configureMiddlewares() {
     this.use(errorHandler());
     this.use(requestId());
+
     this.use(
       logging({
         logger,
         overrideSerializers: false,
       }),
     );
+
     this.use(
       bodyParser({
         enableTypes: ['json'],
         jsonLimit: '10mb',
       }),
     );
+
     this.use(
       cors({
         origins: corsConfig.origins,
@@ -42,11 +51,26 @@ class App extends Koa {
         exposeHeaders: ['Content-Length', 'Date', 'X-Request-Id'],
       }),
     );
+
+    this.use(
+      session(
+        {
+          store: new RedisStore(),
+        },
+        this,
+      ),
+    );
+
+    this.use(passport.initialize());
+    this.use(passport.session());
   }
 
   _configureRoutes() {
-    this.use(router.routes());
-    this.use(router.allowedMethods());
+    this.use(miscRouter.routes());
+    this.use(authRouter.routes());
+
+    this.use(miscRouter.allowedMethods());
+    this.use(authRouter.allowedMethods());
   }
 
   listen(...args) {

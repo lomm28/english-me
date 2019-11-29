@@ -8,20 +8,23 @@ const configs = {
     env,
     name: process.env.APP_NAME || 'english-me-app',
     host: process.env.APP_HOST || '127.0.0.1',
+    database: process.env.DB_NAME,
+    databaseHost: process.env.DB_HOST,
+    databaseUser: process.env.DB_USER,
+    databasePwd: process.env.DB_PASSWORD,
     port: 7070,
   },
   production: {
     port: process.env.APP_PORT || 7071,
   },
-  development: {},
+  development: {
+    port: process.env.APP_PORT,
+  },
   test: {
     port: 7072,
   },
 };
 
 const config = Object.assign(configs.base, configs[env]);
-
-console.log(config);
-console.log(process.env.DB_USER);
 
 module.exports = config;
