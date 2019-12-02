@@ -1,10 +1,14 @@
 const Router = require('koa-router');
-const miscController = require('../controllers/misc');
+const {
+  getApiInfo,
+  getSwaggerSpec,
+  healthcheck,
+} = require('../controllers/misc');
 
 const router = new Router();
 
-router.get('/api/info', miscController.getApiInfo);
-router.get('/spec', miscController.getSwaggerSpec);
-router.get('/status', miscController.healthcheck);
+router.get('/api/info', getApiInfo);
+router.get('/spec', getSwaggerSpec);
+router.get('/status', healthcheck);
 
 module.exports = router;

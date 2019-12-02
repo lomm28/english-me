@@ -9,7 +9,7 @@ export const initialState = {
   },
 };
 
-/* eslint-disable default-case, no-param-reassign */
+/* eslint-disable default-case, no-param-reassign, consistent-return */
 const appReducer = (state = initialState, action) => {
   switch (action.type) {
     case LOAD_REPOS:

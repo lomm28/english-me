@@ -1,5 +1,6 @@
 const path = require('path');
 const HtmlWebPackPlugin = require('html-webpack-plugin');
+const { EnvironmentPlugin } = require('webpack');
 
 module.exports = {
   entry: './src/index.jsx',
@@ -47,6 +48,11 @@ module.exports = {
     new HtmlWebPackPlugin({
       template: 'src/index.html',
       filename: 'index.html',
+    }),
+    new EnvironmentPlugin({
+      NODE_ENV: 'development',
+      HOST: '127.0.0.1',
+      PORT: '3000',
     }),
   ],
 };

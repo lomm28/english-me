@@ -1,3 +1,5 @@
+/* eslint-disable no-param-reassign */
+
 const passport = require('koa-passport');
 const LocalStrategy = require('passport-local').Strategy;
 const User = require('../models/User');
@@ -18,18 +20,23 @@ passport.use(
       passwordField: 'password',
       passReqToCallback: true,
     },
-    (req, username, password, done) => {
-      console.log(req, username, password, done);
+    async (ctx, username, password, done) => {
       const user = User.findOne({
         where: {
           name: username,
-          password,
         },
       });
-      if (!user) {
+
+      if (user) {
+        ctx.body = { msg: `User ${user.username} already exists` };
         return done(null, false);
       }
-      return done(null, user);
+
+      if (!user && username && password) {
+        const newUser = await User.create({ name: username, password });
+        return done(null, newUser);
+      }
+      return done(null, false);
     },
   ),
 );
@@ -42,8 +49,7 @@ passport.use(
       passwordField: 'password',
       passReqToCallback: true,
     },
-    async (req, username, password, done) => {
-      console.log(req, username, password, done);
+    async (ctx, username, password, done) => {
       const user = await User.findOne({
         where: {
           name: username,
@@ -51,9 +57,15 @@ passport.use(
         },
       });
       if (!user) {
+        ctx.body = { msg: `No such user found: ${username}` };
         return done(null, false);
       }
-      return done(null, user);
+      if (user.password === password) {
+        ctx.body = { msg: 'Successfully logged in', user };
+        return done(null, user);
+      }
+      ctx.body = { msg: 'Password is incorrect' };
+      return done(null, false);
     },
   ),
 );

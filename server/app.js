@@ -3,13 +3,17 @@ const logging = require('@kasa/koa-logging');
 const requestId = require('@kasa/koa-request-id');
 const session = require('koa-session');
 const RedisStore = require('koa-redis');
+
 const errorHandler = require('./middlewares/errorHandler');
 const bodyParser = require('./middlewares/bodyParser');
 const cors = require('./middlewares/cors');
 const passport = require('./middlewares/passport');
+
 const corsConfig = require('./config/cors');
 const sessionSecret = require('./config/session');
+
 const logger = require('./logger');
+
 const miscRouter = require('./routes/misc');
 const authRouter = require('./routes/auth');
 
