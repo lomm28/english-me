@@ -1,5 +1,6 @@
 import { createStore, applyMiddleware, compose } from 'redux';
 import createSagaMiddleware from 'redux-saga';
+import thunk from 'redux-thunk';
 import { routerMiddleware } from 'connected-react-router';
 import createReducer from './reducers';
 
@@ -7,7 +8,7 @@ export default function configureStore(initialState = {}, history) {
   const composeEnhancers = compose;
   const reduxSagaMonitorOptions = {};
   const sagaMiddleware = createSagaMiddleware(reduxSagaMonitorOptions);
-  const middlewares = [sagaMiddleware, routerMiddleware(history)];
+  const middlewares = [sagaMiddleware, thunk, routerMiddleware(history)];
 
   const enhancers = [applyMiddleware(...middlewares)];
 

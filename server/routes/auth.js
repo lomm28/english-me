@@ -11,9 +11,10 @@ router.get('/register', ctx => {
 });
 
 router.post('/register', ctx => {
+  console.log('ctx from auth route: ', ctx);
   return passport.authenticate('localRegister', {
     successRedirect: '/',
-    failureRedirect: '/register',
+    failureRedirect: '/login',
   });
 });
 

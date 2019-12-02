@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const instance = axios.create({
-  baseURL: `${process.env.HOST}:${process.env.PORT}`,
+  baseURL: `http://${process.env.HOST}:${process.env.PORT}`,
   timeout: 5000,
 });
 
