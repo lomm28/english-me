@@ -18,19 +18,30 @@ const RegisterForm = ({ push, createUser }) => {
 
   const redirectToLogin = () => push('/login');
 
+  const hideNotification = () =>
+    updateNotification({
+      shown: false,
+      error: false,
+      message: '',
+    });
+
   const registerUser = (values, actions) => {
     createUser(values)
       .then(data => {
-        console.log('data: ', data);
-        actions.resetForm();
+        updateNotification({
+          shown: true,
+          error: false,
+          message: data.message,
+        });
       })
+      .then(() => redirectToLogin())
       .catch(e => {
         updateNotification({
           shown: true,
           error: true,
           message: e.data.message,
         });
-        console.log('error: ', e);
+        actions.resetForm();
       });
   };
 
@@ -41,13 +52,7 @@ const RegisterForm = ({ push, createUser }) => {
       {shown && (
         <Notification
           message={message}
-          hideNotification={() =>
-            updateNotification({
-              shown: false,
-              error: false,
-              message: '',
-            })
-          }
+          hideNotification={hideNotification}
           variant={error ? 'danger' : 'success'}
         />
       )}

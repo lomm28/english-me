@@ -20,23 +20,36 @@ passport.use(
       passwordField: 'password',
       passReqToCallback: true,
     },
-    async (ctx, username, password, done) => {
-      const user = User.findOne({
-        where: {
-          name: username,
-        },
-      });
+    async (context, username, password, done) => {
+      try {
+        const user = await User.findOne({
+          where: {
+            name: username,
+          },
+        });
 
-      if (user) {
-        ctx.body = { msg: `User ${user.username} already exists` };
+        if (user) {
+          context.body = { message: `User ${user.name} already exists` };
+          return done(null, false);
+        }
+
+        if (!user && username && password) {
+          const { email } = context.ctx.request.body;
+          const newUser = await User.create({
+            name: username,
+            password,
+            email,
+          });
+
+          const { dataValues: userInfo } = newUser;
+
+          return done(null, userInfo);
+        }
         return done(null, false);
+      } catch (e) {
+        context.status = 500;
+        context.body = { message: e.message };
       }
-
-      if (!user && username && password) {
-        const newUser = await User.create({ name: username, password });
-        return done(null, newUser);
-      }
-      return done(null, false);
     },
   ),
 );
