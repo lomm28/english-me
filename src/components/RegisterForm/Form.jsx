@@ -1,9 +1,25 @@
 import React from 'react';
 import { func, shape, string, bool } from 'prop-types';
-import { Form, Button, Container, Row, Col } from 'react-bootstrap';
+import { Form, Button, Container, Row, Col, Spinner } from 'react-bootstrap';
 
 const { Group, Label, Control } = Form;
 const { Feedback } = Control;
+
+const style = {
+  formContainer: {
+    marginTop: 20,
+    border: '1px solid #80808029',
+    padding: 20,
+  },
+  spinner: {
+    position: 'absolute',
+    left: '45%',
+    top: '50%',
+  },
+  signUpBtn: {
+    marginTop: 10,
+  },
+};
 
 const BaseForm = ({
   onSubmit,
@@ -14,6 +30,7 @@ const BaseForm = ({
   isValid,
   errors,
   onRedirect,
+  isLoading,
 }) => {
   const isValidField = name =>
     touched[name] && !errors[name] ? 'valid' : 'invalid';
@@ -86,10 +103,10 @@ const BaseForm = ({
 
   const renderBtns = () => (
     <>
-      <Button variant="primary" type="submit" disabled={!isValid}>
+      <Button variant="primary" type="submit" disabled={!isValid || isLoading}>
         Submit
       </Button>
-      <div className="text-center" style={{ marginTop: 10 }}>
+      <div className="text-center" style={style.signUpBtn}>
         <Button variant="link" size="sm" onClick={() => onRedirect()}>
           Sign In
         </Button>
@@ -101,13 +118,14 @@ const BaseForm = ({
     <Container>
       <Row className="justify-content-md-center">
         <Col xs={6}>
-          <div
-            style={{
-              marginTop: 20,
-              border: '1px solid #80808029',
-              padding: 20,
-            }}
-          >
+          <div style={style.formContainer}>
+            {isLoading && (
+              <Spinner
+                animation="border"
+                variant="primary"
+                style={style.spinner}
+              />
+            )}
             <h4 className="text-center">Register</h4>
             <Form noValidate onSubmit={onSubmit}>
               {renderFormFields()}
@@ -133,6 +151,7 @@ BaseForm.propTypes = {
   onBlur: func.isRequired,
   onRedirect: func.isRequired,
   isValid: bool.isRequired,
+  isLoading: bool.isRequired,
 };
 
 BaseForm.defaultProps = {

@@ -2,7 +2,7 @@ const Koa = require('koa');
 const logging = require('@kasa/koa-logging');
 const requestId = require('@kasa/koa-request-id');
 const session = require('koa-session');
-const RedisStore = require('koa-redis');
+const redisStore = require('koa-redis');
 
 const errorHandler = require('./middlewares/errorHandler');
 const bodyParser = require('./middlewares/bodyParser');
@@ -59,7 +59,9 @@ class App extends Koa {
     this.use(
       session(
         {
-          store: new RedisStore(),
+          key: 'lomm28:sess',
+          maxAge: 1000 * 20,
+          store: redisStore(),
         },
         this,
       ),

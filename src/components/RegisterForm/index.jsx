@@ -7,25 +7,14 @@ import { Formik } from 'formik';
 import createUser from './actions';
 import Form from './Form';
 import schema from './schema';
-import Notification from '../Notification';
+import withNotification from '../hoc/withNotification';
 
-const RegisterForm = ({ push, createUser }) => {
-  const [notification, updateNotification] = useState({
-    shown: false,
-    error: false,
-    message: '',
-  });
-
+const RegisterForm = ({ push, createUser, updateNotification }) => {
+  const [isLoading, setLoading] = useState(false);
   const redirectToLogin = () => push('/login');
 
-  const hideNotification = () =>
-    updateNotification({
-      shown: false,
-      error: false,
-      message: '',
-    });
-
   const registerUser = (values, actions) => {
+    setLoading(true);
     createUser(values)
       .then(data => {
         updateNotification({
@@ -41,59 +30,53 @@ const RegisterForm = ({ push, createUser }) => {
           error: true,
           message: e.data.message,
         });
+        setLoading(false);
         actions.resetForm();
       });
   };
 
-  const { shown, message, error } = notification;
-
   return (
-    <>
-      {shown && (
-        <Notification
-          message={message}
-          hideNotification={hideNotification}
-          variant={error ? 'danger' : 'success'}
+    <Formik
+      validationSchema={schema}
+      onSubmit={registerUser}
+      initialValues={{
+        username: '',
+        email: '',
+        password: '',
+        passwordConfirm: '',
+      }}
+    >
+      {({
+        handleSubmit,
+        handleChange,
+        handleBlur,
+        values,
+        touched,
+        isValid,
+        errors,
+      }) => (
+        <Form
+          onSubmit={handleSubmit}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          values={values}
+          touched={touched}
+          isValid={isValid}
+          errors={errors}
+          onRedirect={redirectToLogin}
+          isLoading={isLoading}
         />
       )}
-      <Formik
-        validationSchema={schema}
-        onSubmit={registerUser}
-        initialValues={{
-          username: '',
-          email: '',
-          password: '',
-          passwordConfirm: '',
-        }}
-      >
-        {({
-          handleSubmit,
-          handleChange,
-          handleBlur,
-          values,
-          touched,
-          isValid,
-          errors,
-        }) => (
-          <Form
-            onSubmit={handleSubmit}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            values={values}
-            touched={touched}
-            isValid={isValid}
-            errors={errors}
-            onRedirect={redirectToLogin}
-          />
-        )}
-      </Formik>
-    </>
+    </Formik>
   );
 };
 
 RegisterForm.propTypes = {
   push: func.isRequired,
   createUser: func.isRequired,
+  updateNotification: func.isRequired,
 };
 
-export default connect(null, { push, createUser })(RegisterForm);
+export default connect(null, { push, createUser })(
+  withNotification(RegisterForm),
+);

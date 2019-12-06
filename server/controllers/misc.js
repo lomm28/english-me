@@ -42,8 +42,12 @@ exports.getApiInfo = ctx => {
     description: pkginfo.description,
     environments,
   };
-
-  ctx.body = data;
+  if (ctx.isAuthenticated()) {
+    ctx.body = data;
+  } else {
+    ctx.status = 401;
+    ctx.body = { message: 'Please log in!' };
+  }
 };
 
 /**

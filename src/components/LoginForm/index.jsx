@@ -1,69 +1,123 @@
 import React, { useState } from 'react';
 import { func } from 'prop-types';
 import { connect } from 'react-redux';
-import { Form, Button, Container, Row, Col } from 'react-bootstrap';
+import { Form, Button, Container, Row, Col, Spinner } from 'react-bootstrap';
 import { push } from 'connected-react-router';
 
-const { Group, Label, Control } = Form;
-const { Feedback } = Control;
+import loginUser from './actions';
+import withNotification from '../hoc/withNotification';
 
-const LoginForm = ({ push }) => {
-  const [validated, setValidated] = useState(false);
+const { Group, Label, Control } = Form;
+
+const style = {
+  formContainer: {
+    marginTop: 20,
+    border: '1px solid #80808029',
+    padding: 20,
+  },
+  spinner: {
+    position: 'absolute',
+    left: '45%',
+    top: '50%',
+  },
+  signUpBtn: {
+    marginTop: 10,
+  },
+};
+
+const LoginForm = ({ push, loginUser, updateNotification }) => {
+  const [creds, updateCreds] = useState({ username: '', password: '' });
+  const [isLoading, setLoading] = useState(false);
+
+  const { username, password } = creds;
 
   const handleSubmit = event => {
-    const form = event.currentTarget;
-    if (!form.checkValidity()) {
-      event.preventDefault();
-      event.stopPropagation();
+    event.preventDefault();
+    setLoading(true);
+    if (username && password) {
+      loginUser(creds)
+        .then(data => {
+          updateNotification({
+            shown: true,
+            error: false,
+            message: data.message,
+          });
+        })
+        .catch(e => {
+          updateNotification({
+            shown: true,
+            error: true,
+            message: e.data.message,
+          });
+        })
+        .finally(() => setLoading(false));
     }
-
-    setValidated(true);
   };
 
   const redirectToRegister = () => push('/register');
 
+  const handleChange = e => {
+    updateCreds({ ...creds, [e.target.name]: e.target.value });
+  };
+
   const renderFormFields = () => (
     <>
       <Group controlId="formBasicEmail">
-        <Label>Email address</Label>
-        <Control type="email" placeholder="Enter email" required />
-        <Feedback>Looks good!</Feedback>
+        <Label>Username</Label>
+        <Control
+          type="text"
+          name="username"
+          placeholder="Enter username"
+          onChange={handleChange}
+          value={creds.username}
+          required
+        />
       </Group>
 
       <Group controlId="formBasicPassword">
         <Label>Password</Label>
-        <Control type="password" placeholder="Password" required />
-        <Feedback>Looks good!</Feedback>
+        <Control
+          type="password"
+          name="password"
+          placeholder="Password"
+          onChange={handleChange}
+          value={creds.password}
+          required
+        />
       </Group>
     </>
   );
 
-  const renderBtns = () => (
-    <>
-      <Button variant="primary" type="submit">
-        Submit
-      </Button>
-      <div className="text-center" style={{ marginTop: 10 }}>
-        <Button variant="link" size="sm" onClick={() => redirectToRegister()}>
-          Sign Up
+  const renderBtns = () => {
+    const isSubmitDisabled = !username || !password || isLoading;
+    return (
+      <>
+        <Button variant="primary" type="submit" disabled={isSubmitDisabled}>
+          Submit
         </Button>
-      </div>
-    </>
-  );
+        <div className="text-center" style={style.signUpBtn}>
+          <Button variant="link" size="sm" onClick={() => redirectToRegister()}>
+            Sign Up
+          </Button>
+        </div>
+      </>
+    );
+  };
 
   return (
     <Container>
       <Row className="justify-content-md-center">
         <Col xs={6}>
-          <div
-            style={{
-              marginTop: 20,
-              border: '1px solid #80808029',
-              padding: 20,
-            }}
-          >
+          <div style={style.formContainer}>
+            {isLoading && (
+              <Spinner
+                animation="border"
+                variant="primary"
+                style={style.spinner}
+              />
+            )}
             <h4 className="text-center">Login</h4>
-            <Form noValidate validated={validated} onSubmit={handleSubmit}>
+            <Form noValidate onSubmit={handleSubmit}>
               {renderFormFields()}
               {renderBtns()}
             </Form>
@@ -76,6 +130,8 @@ const LoginForm = ({ push }) => {
 
 LoginForm.propTypes = {
   push: func.isRequired,
+  loginUser: func.isRequired,
+  updateNotification: func.isRequired,
 };
 
-export default connect(null, { push })(LoginForm);
+export default connect(null, { push, loginUser })(withNotification(LoginForm));
